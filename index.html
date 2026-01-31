@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- iPhone PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="家計簿">
+    
+    <title>Budget Tracker Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+        
+        :root {
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #000000;
+            color: #f1f5f9;
+            overscroll-behavior-y: none;
+            -webkit-user-select: none;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .category-chip {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .category-chip.active {
+            border-color: #3b82f6;
+            background-color: #2563eb;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        input { font-size: 16px !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slide-up 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease-out;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar { display: none; }
+        .safe-pt { padding-top: calc(0.5rem + var(--safe-top)); }
+        .safe-pb { padding-bottom: calc(1rem + var(--safe-bottom)); }
+        .safe-mb { margin-bottom: var(--safe-bottom); }
+
+        /* タップ時のフィードバック */
+        .active-scale:active { transform: scale(0.95); transition: 0.1s; }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+
+    <!-- Header -->
+    <header class="bg-black/60 border-b border-white/5 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div>
+                <p id="currentCycleRange" class="text-[11px] font-bold text-gray-500 tracking-wider">--/-- ~ --/--</p>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <span id="cycleDurationBadge" class="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded-md border border-white/5">--日間</span>
+                </div>
+            </div>
+            <button id="settingsBtn" class="p-2 hover:bg-white/10 rounded-full transition active-scale">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-6 mt-4 space-y-6">
+        
+        <!-- Dashboard Card -->
+        <section>
+            <div class="glass-card p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10">
+                <div class="relative z-10">
+                    <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] mb-3">今日使える目安</p>
+                    <div class="flex items-baseline gap-2 mb-6">
+                        <span class="text-5xl font-bold text-white tracking-tight" id="dailyAllowance">¥0</span>
+                        <span class="text-gray-500 text-sm font-medium">/ day</span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="space-y-2 mb-8">
+                        <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                            <span class="text-gray-500">予算消化率</span>
+                            <span id="usagePercent" class="text-blue-400">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progressFill" class="progress-fill bg-blue-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">今サイクルの残り</p>
+                            <p class="text-xl font-bold text-gray-100" id="remainingBudget">¥0</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-1">締めまで残り</p>
+                            <p class="text-xl font-bold text-gray-100" id="daysLeft">--日</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl"></div>
+            </div>
+        </section>
+
+        <!-- Stats Row -->
+        <section class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-900/40 p-5 rounded-[2rem] border border-white/5 shadow-inner">
+                <p class="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">変動費合計</p>
+                <p class="text-lg font-black text-rose-500" id="totalVariable">¥0</p>
+            </div>
+            <div class="bg-slate-900/40 p-5 rounded-[2rem] border border-white/5 shadow-inner">
+                <p class="text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-1">貯蓄から合計</p>
+                <p class="text-lg font-black text-amber-500" id="totalSavingsExpense">¥0</p>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-center px-2">
+                <h2 class="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em]">最近の記録</h2>
+                <div class="h-[1px] flex-1 bg-white/5 mx-4"></div>
+            </div>
+            <div id="historyList" class="space-y-3 pb-10">
+                <!-- Transactions rendered here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fixed bottom-0 left-0 right-0 pointer-events-none flex justify-center pb-8 safe-mb z-40">
+        <button id="addBtn" class="pointer-events-auto w-16 h-16 bg-blue-600 text-white rounded-full shadow-[0_15px_30px_rgba(37,99,235,0.4)] flex items-center justify-center hover:bg-blue-500 transition-all transform hover:scale-110 active:scale-90 border-[6px] border-black active-scale">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m6-6H6" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Modals (Input / Edit) -->
+    <div id="entryModal" class="fixed inset-0 bg-black/90 z-50 flex items-end justify-center hidden backdrop-blur-md">
+        <div class="bg-slate-950 w-full max-w-md rounded-t-[3rem] p-8 pb-12 space-y-8 animate-slide-up shadow-2xl overflow-y-auto max-h-[96vh] border-t border-white/10 safe-pb">
+            <div class="flex justify-between items-center">
+                <h3 id="modalTitle" class="text-xl font-bold text-white tracking-tight">支出を入力</h3>
+                <button id="closeModal" class="text-gray-600 bg-white/5 p-2 rounded-full active-scale">&times;</button>
+            </div>
+
+            <input type="hidden" id="editId">
+
+            <div class="space-y-8">
+                <!-- Amount -->
+                <div class="text-center py-2">
+                    <label class="block text-[10px] text-gray-500 mb-2 uppercase tracking-widest font-black">金額</label>
+                    <div class="flex items-center justify-center gap-2">
+                        <span class="text-3xl font-bold text-blue-500">¥</span>
+                        <input type="number" id="amountInput" inputmode="numeric" placeholder="0" class="text-6xl font-black text-white bg-transparent border-none focus:ring-0 outline-none w-64 text-center placeholder:text-gray-800">
+                    </div>
+                </div>
+
+                <!-- Memo -->
+                <div class="bg-white/5 rounded-2xl p-1 border border-white/5">
+                    <input type="text" id="memoInput" placeholder="メモ（任意）" class="w-full bg-transparent px-5 py-5 outline-none text-white text-lg font-medium placeholder:text-gray-600">
+                </div>
+
+                <!-- Type Selector -->
+                <div class="flex p-1.5 bg-black rounded-2xl border border-white/10">
+                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-xs transition-all active-scale" data-type="variable" id="tabVar">🛒 変動費</button>
+                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-xs transition-all active-scale" data-type="savings" id="tabSav">💰 貯蓄から</button>
+                </div>
+
+                <!-- Category Grid -->
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center px-1">
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest font-black">カテゴリー</label>
+                    </div>
+                    <div id="categoryGrid" class="flex flex-wrap gap-2.5">
+                        <!-- Categories injected -->
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-6">
+                    <button id="deleteEntryBtn" class="hidden flex-1 bg-rose-500/10 text-rose-500 font-black py-5 rounded-[2rem] active:bg-rose-500/20 active-scale">削除</button>
+                    <button id="saveBtn" class="flex-[3] bg-blue-600 text-white font-black py-5 rounded-[2.5rem] shadow-xl hover:bg-blue-500 active-scale text-lg tracking-wider">記録を保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Name Input Modal -->
+    <div id="catInputModal" class="fixed inset-0 bg-black/95 z-[60] flex items-center justify-center hidden p-4 backdrop-blur-xl">
+        <div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-8 space-y-6 shadow-2xl border border-white/10">
+            <h3 class="text-lg font-bold text-center text-white tracking-tight">カテゴリー追加</h3>
+            <div class="space-y-4">
+                <input type="text" id="newCatNameInput" placeholder="名称を入力" class="w-full bg-white/5 rounded-2xl px-5 py-4 outline-none text-white text-lg font-medium border border-white/5 focus:border-blue-500">
+                <div class="flex gap-3">
+                    <button id="closeCatModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button>
+                    <button id="confirmAddCat" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">決定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center hidden p-4 backdrop-blur-xl">
+        <div class="bg-slate-950 w-full max-w-sm rounded-[3rem] p-10 space-y-10 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/10 safe-pb">
+            <h3 class="text-2xl font-bold text-center text-white tracking-tight">設定</h3>
+            
+            <!-- Inputs -->
+            <div class="space-y-8">
+                <div>
+                    <label class="text-[10px] text-gray-500 font-black uppercase mb-3 block tracking-widest">月間変動費予算 (¥)</label>
+                    <input type="number" id="monthlyBudgetInput" inputmode="numeric" class="w-full text-3xl font-black border-b-2 border-white/5 focus:border-blue-600 bg-transparent text-white outline-none py-3 transition-colors">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 font-black uppercase mb-3 block tracking-widest">サイクルの開始日</label>
+                    <div class="flex items-center gap-4">
+                        <input type="number" id="startDayInput" inputmode="numeric" min="1" max="31" class="w-24 text-3xl font-black border-b-2 border-white/5 focus:border-blue-600 bg-transparent text-white outline-none py-3 text-center transition-colors">
+                        <span class="text-gray-400 font-bold text-lg">日 に開始</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="space-y-6 pt-6 border-t border-white/5">
+                <label class="text-[10px] text-gray-500 font-black uppercase block tracking-widest">カテゴリーのカスタマイズ</label>
+                <div class="space-y-8">
+                    <div id="catManageVar" class="space-y-3"></div>
+                    <div id="catManageSav" class="space-y-3"></div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="space-y-4 pt-6 border-t border-white/5">
+                <label class="text-[10px] text-gray-500 font-black uppercase block tracking-widest">データ管理</label>
+                <button id="clearBtn" class="w-full py-4 rounded-2xl text-[10px] font-bold text-rose-800 hover:text-rose-500 transition active-scale">すべてのデータを消去</button>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+                <button id="closeSettings" class="flex-1 bg-white/5 text-gray-400 py-5 rounded-[2rem] font-bold active-scale">戻る</button>
+                <button id="saveSettings" class="flex-1 bg-blue-600 text-white py-5 rounded-[2.5rem] font-black shadow-lg active-scale">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Core State ---
+        let appState = {
+            monthlyBudget: 50000,
+            startDay: 25,
+            categories: {
+                variable: ["食費", "日用品", "交通費", "交際費", "趣味"],
+                savings: ["貯金", "旅費交通費", "病院", "自己投資", "突発支出"]
+            },
+            transactions: []
+        };
+
+        const STORAGE_KEY = 'smart_budget_final_v1';
+        let currentType = 'variable';
+        let selectedCategory = '';
+        let editingId = null;
+        let targetCatType = ''; // 追加用
+
+        // --- Logic & Helpers ---
+
+        function getCycleInfo() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let year = today.getFullYear();
+            let month = today.getMonth();
+
+            if (today.getDate() < appState.startDay) { month--; }
+
+            let start = new Date(year, month, appState.startDay);
+            if (start.getMonth() !== (month + 12) % 12) { start = new Date(year, month + 1, 0); }
+            start.setHours(0,0,0,0);
+
+            let end = new Date(start.getFullYear(), start.getMonth() + 1, start.getDate());
+            end.setDate(end.getDate() - 1);
+            end.setHours(0,0,0,0);
+
+            const diffTime = end.getTime() - today.getTime();
+            const daysLeft = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1);
+            const totalDaysInCycle = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+
+            return { start, end, daysLeft, totalDays: totalDaysInCycle, rangeText: `${start.getMonth()+1}/${start.getDate()} ~ ${end.getMonth()+1}/${end.getDate()}` };
+        }
+
+        function updateUI() {
+            const cycle = getCycleInfo();
+            document.getElementById('currentCycleRange').innerText = cycle.rangeText;
+            document.getElementById('cycleDurationBadge').innerText = `${cycle.totalDays}日間`;
+
+            let varTotal = 0;
+            let savTotal = 0;
+
+            appState.transactions.forEach(t => {
+                const tDate = new Date(t.timestamp);
+                tDate.setHours(0,0,0,0);
+                if (t.type === 'variable') {
+                    if (tDate >= cycle.start && tDate <= cycle.end) varTotal += t.amount;
+                } else {
+                    if (tDate >= cycle.start && tDate <= cycle.end) savTotal += t.amount;
+                }
+            });
+
+            const remaining = appState.monthlyBudget - varTotal;
+            const daily = Math.floor(remaining / cycle.daysLeft);
+            const usagePercent = Math.min(100, Math.round((varTotal / appState.monthlyBudget) * 100)) || 0;
+
+            formatBudgetDisplay(daily, document.getElementById('dailyAllowance'));
+            formatBudgetDisplay(remaining, document.getElementById('remainingBudget'));
+            
+            document.getElementById('usagePercent').innerText = `${usagePercent}%`;
+            document.getElementById('progressFill').style.width = `${usagePercent}%`;
+            document.getElementById('daysLeft').innerText = `${cycle.daysLeft}日`;
+            document.getElementById('totalVariable').innerText = `¥${varTotal.toLocaleString()}`;
+            document.getElementById('totalSavingsExpense').innerText = `¥${savTotal.toLocaleString()}`;
+
+            renderHistory();
+        }
+
+        function formatBudgetDisplay(amount, element) {
+            const isNeg = amount < 0;
+            const absVal = Math.abs(amount).toLocaleString();
+            element.innerText = `${isNeg ? '⁻' : ''}¥${absVal}`;
+            element.className = isNeg ? 'text-rose-500 font-bold' : 'text-white font-bold';
+            if (element.id === 'remainingBudget' && !isNeg) element.className = 'text-gray-100 font-bold';
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            if (appState.transactions.length === 0) {
+                list.innerHTML = '<p class="text-center py-20 text-gray-700 text-xs tracking-widest font-bold">NO RECORDS FOUND</p>';
+                return;
+            }
+
+            list.innerHTML = '';
+            [...appState.transactions].sort((a,b) => b.timestamp - a.timestamp).forEach(t => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-900/40 p-5 rounded-[1.8rem] flex items-center justify-between border border-white/5 active:bg-white/5 transition-all cursor-pointer active-scale";
+                div.onclick = () => openEditModal(t);
+                
+                const d = new Date(t.timestamp);
+                const dateStr = `${d.getMonth()+1}/${d.getDate()}`;
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl ${t.type === 'variable' ? 'bg-blue-600/10 text-blue-500' : 'bg-amber-600/10 text-amber-400'} flex items-center justify-center text-[10px] font-black border border-white/5">
+                            ${t.category.substring(0,2)}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-100 text-[13px]">${t.memo || t.category}</p>
+                            <p class="text-[9px] text-gray-600 font-black mt-1 uppercase tracking-tighter">${dateStr} • ${t.category}</p>
+                        </div>
+                    </div>
+                    <p class="font-bold text-gray-100 text-sm">¥${t.amount.toLocaleString()}</p>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // --- Event Handlers ---
+
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').innerText = "支出を入力";
+            document.getElementById('amountInput').value = '';
+            document.getElementById('memoInput').value = '';
+            document.getElementById('deleteEntryBtn').classList.add('hidden');
+            document.getElementById('entryModal').classList.remove('hidden');
+            switchType('variable');
+        }
+
+        function openEditModal(t) {
+            editingId = t.id;
+            document.getElementById('modalTitle').innerText = "記録を編集";
+            document.getElementById('amountInput').value = t.amount;
+            document.getElementById('memoInput').value = t.memo;
+            document.getElementById('deleteEntryBtn').classList.remove('hidden');
+            switchType(t.type);
+            selectedCategory = t.category;
+            renderCategoryGrid();
+            document.getElementById('entryModal').classList.remove('hidden');
+        }
+
+        function switchType(type) {
+            currentType = type;
+            const isVar = type === 'variable';
+            document.getElementById('tabVar').className = `type-tab-btn flex-1 py-3.5 rounded-xl font-black text-[10px] transition-all ${isVar ? 'bg-slate-800 text-blue-400 shadow-xl' : 'text-gray-700'}`;
+            document.getElementById('tabSav').className = `type-tab-btn flex-1 py-3.5 rounded-xl font-black text-[10px] transition-all ${!isVar ? 'bg-slate-800 text-amber-400 shadow-xl' : 'text-gray-700'}`;
+            selectedCategory = appState.categories[type][0] || '';
+            renderCategoryGrid();
+        }
+
+        function renderCategoryGrid() {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = '';
+            appState.categories[currentType].forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `category-chip px-5 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all ${selectedCategory === cat ? 'active' : 'bg-black text-gray-600'}`;
+                btn.innerText = cat;
+                btn.onclick = () => { selectedCategory = cat; renderCategoryGrid(); };
+                grid.appendChild(btn);
+            });
+        }
+
+        function saveEntry() {
+            const amt = parseInt(document.getElementById('amountInput').value);
+            if (!amt || amt <= 0) return;
+            const entry = {
+                id: editingId || Date.now(),
+                amount: amt,
+                memo: document.getElementById('memoInput').value,
+                type: currentType,
+                category: selectedCategory,
+                timestamp: editingId ? appState.transactions.find(x => x.id === editingId).timestamp : Date.now()
+            };
+
+            if (editingId) {
+                const idx = appState.transactions.findIndex(x => x.id === editingId);
+                appState.transactions[idx] = entry;
+            } else { appState.transactions.push(entry); }
+            saveToStorage(); updateUI();
+            document.getElementById('entryModal').classList.add('hidden');
+        }
+
+        function deleteEntry() {
+            if (!confirm("この記録を削除しますか？")) return;
+            appState.transactions = appState.transactions.filter(x => x.id !== editingId);
+            saveToStorage(); updateUI();
+            document.getElementById('entryModal').classList.add('hidden');
+        }
+
+        function renderCategoryManagement() {
+            const listC = (type, containerId) => {
+                const cont = document.getElementById(containerId);
+                const label = type === 'variable' ? '変動費' : '貯蓄から';
+                const color = type === 'variable' ? 'text-blue-500' : 'text-amber-500';
+                
+                cont.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <p class="text-[9px] font-black ${color} uppercase tracking-widest">${label}</p>
+                        <button onclick="addCat('${type}')" class="text-[10px] bg-white/5 text-gray-400 px-3 py-1 rounded-lg border border-white/5 active:bg-white/10 active-scale">＋追加</button>
+                    </div>
+                `;
+                
+                appState.categories[type].forEach((cat, idx) => {
+                    const row = document.createElement('div');
+                    row.className = "flex items-center gap-3 bg-black/50 p-4 rounded-2xl border border-white/5 mb-2";
+                    row.innerHTML = `
+                        <input type="text" value="${cat}" class="flex-1 bg-transparent text-sm font-bold text-gray-200 outline-none" onchange="upCat('${type}', ${idx}, this.value)">
+                        <button class="text-gray-700 hover:text-rose-500 text-xl font-bold p-1 active-scale" onclick="rmCat('${type}', ${idx})">&times;</button>
+                    `;
+                    cont.appendChild(row);
+                });
+            };
+            listC('variable', 'catManageVar');
+            listC('savings', 'catManageSav');
+        }
+
+        // カテゴリー追加モーダルを開く
+        window.addCat = (type) => {
+            targetCatType = type;
+            document.getElementById('newCatNameInput').value = '';
+            document.getElementById('catInputModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('newCatNameInput').focus(), 100);
+        };
+
+        // カテゴリー追加の確定
+        document.getElementById('confirmAddCat').onclick = () => {
+            const name = document.getElementById('newCatNameInput').value.trim();
+            if (name) {
+                appState.categories[targetCatType].push(name);
+                saveToStorage();
+                renderCategoryManagement();
+                document.getElementById('catInputModal').classList.add('hidden');
+            }
+        };
+
+        // カテゴリー追加の中止
+        document.getElementById('closeCatModal').onclick = () => {
+            document.getElementById('catInputModal').classList.add('hidden');
+        };
+
+        window.upCat = (t, i, v) => { if (v.trim()) appState.categories[t][i] = v.trim(); saveToStorage(); };
+        window.rmCat = (t, i) => { if (appState.categories[t].length > 1) { appState.categories[t].splice(i, 1); renderCategoryManagement(); saveToStorage(); } };
+
+        // --- Data Persistence ---
+
+        function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); }
+
+        // --- Initialization ---
+
+        function init() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) appState = {...appState, ...JSON.parse(saved)};
+            
+            document.getElementById('addBtn').onclick = openAddModal;
+            document.getElementById('closeModal').onclick = () => document.getElementById('entryModal').classList.add('hidden');
+            document.getElementById('saveBtn').onclick = saveEntry;
+            document.getElementById('deleteEntryBtn').onclick = deleteEntry;
+            document.getElementById('tabVar').onclick = () => switchType('variable');
+            document.getElementById('tabSav').onclick = () => switchType('savings');
+            
+            document.getElementById('settingsBtn').onclick = () => {
+                document.getElementById('monthlyBudgetInput').value = appState.monthlyBudget;
+                document.getElementById('startDayInput').value = appState.startDay;
+                renderCategoryManagement();
+                document.getElementById('settingsModal').classList.remove('hidden');
+            };
+            document.getElementById('closeSettings').onclick = () => document.getElementById('settingsModal').classList.add('hidden');
+            document.getElementById('saveSettings').onclick = () => {
+                appState.monthlyBudget = parseInt(document.getElementById('monthlyBudgetInput').value) || 0;
+                appState.startDay = parseInt(document.getElementById('startDayInput').value) || 1;
+                saveToStorage(); updateUI();
+                document.getElementById('settingsModal').classList.add('hidden');
+            };
+            document.getElementById('clearBtn').onclick = () => {
+                if (confirm("すべてのデータを完全に消去しますか？この操作は取り消せません。")) { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+            };
+
+            updateUI();
+        }
+
+        init();
+    </script>
+</body>
+</html>
