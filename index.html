@@ -49,6 +49,10 @@
 
         input { font-size: 16px !important; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
 
         @keyframes slide-up {
             from { transform: translateY(100%); }
@@ -73,7 +77,6 @@
         .safe-pb { padding-bottom: calc(1rem + var(--safe-bottom)); }
         .safe-mb { margin-bottom: var(--safe-bottom); }
 
-        /* タップ時のフィードバック */
         .active-scale:active { transform: scale(0.95); transition: 0.1s; }
     </style>
 </head>
@@ -105,7 +108,7 @@
                 <div class="relative z-10">
                     <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] mb-3">今日使える目安</p>
                     <div class="flex items-baseline gap-2 mb-6">
-                        <span class="text-5xl font-bold text-white tracking-tight" id="dailyAllowance">¥0</span>
+                        <span class="text-5xl font-bold text-white tracking-tight transition-colors duration-300" id="dailyAllowance">¥0</span>
                         <span class="text-gray-500 text-sm font-medium">/ day</span>
                     </div>
                     
@@ -188,15 +191,21 @@
                     </div>
                 </div>
 
-                <!-- Memo -->
-                <div class="bg-white/5 rounded-2xl p-1 border border-white/5">
-                    <input type="text" id="memoInput" placeholder="メモ（任意）" class="w-full bg-transparent px-5 py-5 outline-none text-white text-lg font-medium placeholder:text-gray-600">
+                <!-- Date & Memo -->
+                <div class="space-y-4">
+                    <div class="bg-white/5 rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest font-black">日付</label>
+                        <input type="date" id="dateInput" class="bg-transparent text-white outline-none font-bold text-sm">
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-1 border border-white/5">
+                        <input type="text" id="memoInput" placeholder="メモ（任意）" class="w-full bg-transparent px-5 py-5 outline-none text-white text-lg font-medium placeholder:text-gray-600">
+                    </div>
                 </div>
 
                 <!-- Type Selector -->
                 <div class="flex p-1.5 bg-black rounded-2xl border border-white/10">
-                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-xs transition-all active-scale" data-type="variable" id="tabVar">🛒 変動費</button>
-                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-xs transition-all active-scale" data-type="savings" id="tabSav">💰 貯蓄から</button>
+                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-[10px] transition-all active-scale" data-type="variable" id="tabVar">🛒 変動費</button>
+                    <button class="type-tab-btn flex-1 py-3.5 rounded-xl font-black text-[10px] transition-all active-scale" data-type="savings" id="tabSav">💰 貯蓄から</button>
                 </div>
 
                 <!-- Category Grid -->
@@ -227,6 +236,21 @@
                     <button id="closeCatModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button>
                     <button id="confirmAddCat" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">決定</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black/95 z-[70] flex items-center justify-center hidden p-6 backdrop-blur-xl">
+        <div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-10 space-y-8 shadow-2xl border border-rose-500/20 text-center">
+            <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">⚠️</div>
+            <div class="space-y-2">
+                <h3 class="text-lg font-bold text-white tracking-tight">記録を削除しますか？</h3>
+                <p class="text-xs text-gray-500 leading-relaxed">この操作は取り消せません。<br>本当によろしいですか？</p>
+            </div>
+            <div class="space-y-3">
+                <button id="confirmDeleteAction" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">削除する</button>
+                <button id="cancelDeleteAction" class="w-full bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">キャンセル</button>
             </div>
         </div>
     </div>
@@ -289,7 +313,7 @@
         let currentType = 'variable';
         let selectedCategory = '';
         let editingId = null;
-        let targetCatType = ''; // 追加用
+        let targetCatType = '';
 
         // --- Logic & Helpers ---
 
@@ -315,6 +339,13 @@
             const totalDaysInCycle = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
             return { start, end, daysLeft, totalDays: totalDaysInCycle, rangeText: `${start.getMonth()+1}/${start.getDate()} ~ ${end.getMonth()+1}/${end.getDate()}` };
+        }
+
+        function formatDateForInput(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
         function updateUI() {
@@ -355,14 +386,18 @@
             const isNeg = amount < 0;
             const absVal = Math.abs(amount).toLocaleString();
             element.innerText = `${isNeg ? '⁻' : ''}¥${absVal}`;
-            element.className = isNeg ? 'text-rose-500 font-bold' : 'text-white font-bold';
-            if (element.id === 'remainingBudget' && !isNeg) element.className = 'text-gray-100 font-bold';
+            element.classList.remove('text-white', 'text-gray-100', 'text-rose-500');
+            if (isNeg) {
+                element.classList.add('text-rose-500');
+            } else {
+                element.classList.add(element.id === 'dailyAllowance' ? 'text-white' : 'text-gray-100');
+            }
         }
 
         function renderHistory() {
             const list = document.getElementById('historyList');
             if (appState.transactions.length === 0) {
-                list.innerHTML = '<p class="text-center py-20 text-gray-700 text-xs tracking-widest font-bold">NO RECORDS FOUND</p>';
+                list.innerHTML = '<p class="text-center py-20 text-gray-700 text-xs tracking-widest font-bold italic">NO RECORDS FOUND</p>';
                 return;
             }
 
@@ -398,6 +433,7 @@
             document.getElementById('modalTitle').innerText = "支出を入力";
             document.getElementById('amountInput').value = '';
             document.getElementById('memoInput').value = '';
+            document.getElementById('dateInput').value = formatDateForInput(new Date());
             document.getElementById('deleteEntryBtn').classList.add('hidden');
             document.getElementById('entryModal').classList.remove('hidden');
             switchType('variable');
@@ -408,6 +444,7 @@
             document.getElementById('modalTitle').innerText = "記録を編集";
             document.getElementById('amountInput').value = t.amount;
             document.getElementById('memoInput').value = t.memo;
+            document.getElementById('dateInput').value = formatDateForInput(new Date(t.timestamp));
             document.getElementById('deleteEntryBtn').classList.remove('hidden');
             switchType(t.type);
             selectedCategory = t.category;
@@ -439,29 +476,47 @@
         function saveEntry() {
             const amt = parseInt(document.getElementById('amountInput').value);
             if (!amt || amt <= 0) return;
+            const dateStr = document.getElementById('dateInput').value;
+            const timestamp = new Date(dateStr).getTime();
+
             const entry = {
                 id: editingId || Date.now(),
                 amount: amt,
                 memo: document.getElementById('memoInput').value,
                 type: currentType,
                 category: selectedCategory,
-                timestamp: editingId ? appState.transactions.find(x => x.id === editingId).timestamp : Date.now()
+                timestamp: timestamp
             };
 
             if (editingId) {
                 const idx = appState.transactions.findIndex(x => x.id === editingId);
                 appState.transactions[idx] = entry;
             } else { appState.transactions.push(entry); }
+            
             saveToStorage(); updateUI();
             document.getElementById('entryModal').classList.add('hidden');
         }
 
-        function deleteEntry() {
-            if (!confirm("この記録を削除しますか？")) return;
-            appState.transactions = appState.transactions.filter(x => x.id !== editingId);
-            saveToStorage(); updateUI();
-            document.getElementById('entryModal').classList.add('hidden');
-        }
+        // 削除ボタンが押されたとき（確認モーダルを表示）
+        document.getElementById('deleteEntryBtn').onclick = () => {
+            document.getElementById('deleteConfirmModal').classList.remove('hidden');
+        };
+
+        // 確認モーダルで「削除する」を押したとき
+        document.getElementById('confirmDeleteAction').onclick = () => {
+            if (editingId) {
+                appState.transactions = appState.transactions.filter(x => x.id !== editingId);
+                saveToStorage();
+                updateUI();
+                document.getElementById('deleteConfirmModal').classList.add('hidden');
+                document.getElementById('entryModal').classList.add('hidden');
+            }
+        };
+
+        // 確認モーダルで「キャンセル」を押したとき
+        document.getElementById('cancelDeleteAction').onclick = () => {
+            document.getElementById('deleteConfirmModal').classList.add('hidden');
+        };
 
         function renderCategoryManagement() {
             const listC = (type, containerId) => {
@@ -490,7 +545,6 @@
             listC('savings', 'catManageSav');
         }
 
-        // カテゴリー追加モーダルを開く
         window.addCat = (type) => {
             targetCatType = type;
             document.getElementById('newCatNameInput').value = '';
@@ -498,7 +552,6 @@
             setTimeout(() => document.getElementById('newCatNameInput').focus(), 100);
         };
 
-        // カテゴリー追加の確定
         document.getElementById('confirmAddCat').onclick = () => {
             const name = document.getElementById('newCatNameInput').value.trim();
             if (name) {
@@ -509,7 +562,6 @@
             }
         };
 
-        // カテゴリー追加の中止
         document.getElementById('closeCatModal').onclick = () => {
             document.getElementById('catInputModal').classList.add('hidden');
         };
@@ -517,11 +569,7 @@
         window.upCat = (t, i, v) => { if (v.trim()) appState.categories[t][i] = v.trim(); saveToStorage(); };
         window.rmCat = (t, i) => { if (appState.categories[t].length > 1) { appState.categories[t].splice(i, 1); renderCategoryManagement(); saveToStorage(); } };
 
-        // --- Data Persistence ---
-
         function saveToStorage() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appState)); }
-
-        // --- Initialization ---
 
         function init() {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -530,7 +578,6 @@
             document.getElementById('addBtn').onclick = openAddModal;
             document.getElementById('closeModal').onclick = () => document.getElementById('entryModal').classList.add('hidden');
             document.getElementById('saveBtn').onclick = saveEntry;
-            document.getElementById('deleteEntryBtn').onclick = deleteEntry;
             document.getElementById('tabVar').onclick = () => switchType('variable');
             document.getElementById('tabSav').onclick = () => switchType('savings');
             
