@@ -107,6 +107,7 @@
             <div class="glass-card p-6 rounded-[2.5rem] shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10">
                 <div class="relative z-10 space-y-6">
                     
+                    <!-- Top Budget/Spent Row -->
                     <div class="flex justify-between items-start">
                         <div class="space-y-1">
                             <p class="text-[9px] text-blue-400 font-bold uppercase tracking-[0.2em]">本日予算</p>
@@ -118,11 +119,13 @@
                         </div>
                     </div>
 
+                    <!-- Today's Balance Highlight -->
                     <div class="bg-black/30 rounded-2xl p-4 border border-white/5 text-center">
                         <p class="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-1">本日の余剰資金</p>
                         <span class="text-2xl font-black transition-colors duration-300" id="todayBalance">¥0</span>
                     </div>
                     
+                    <!-- Progress Bar -->
                     <div class="space-y-2">
                         <div class="flex justify-between text-[9px] font-bold uppercase tracking-wider">
                             <span class="text-gray-500">今月の予算消化率</span>
@@ -133,6 +136,7 @@
                         </div>
                     </div>
 
+                    <!-- Monthly Stats -->
                     <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
                         <div>
                             <p class="text-[9px] text-gray-500 uppercase font-bold tracking-wider mb-1">今月余剰資金</p>
@@ -160,14 +164,13 @@
             </div>
         </section>
 
-        <!-- History Section -->
+        <!-- History -->
         <section class="space-y-4">
             <div class="flex justify-between items-center px-2">
                 <h2 class="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em]">最近の記録</h2>
                 <div class="h-[1px] flex-1 bg-white/5 mx-4"></div>
             </div>
-            <div id="historyList" class="space-y-3 pb-10">
-            </div>
+            <div id="historyList" class="space-y-3 pb-10"></div>
         </section>
     </main>
 
@@ -220,7 +223,7 @@
         </div>
     </div>
 
-    <!-- Category Input Modal -->
+    <!-- Confirmation / Input Modals -->
     <div id="catInputModal" class="fixed inset-0 bg-black/95 z-[60] flex items-center justify-center hidden p-4 backdrop-blur-xl">
         <div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-8 space-y-6 shadow-2xl border border-white/10">
             <h3 class="text-lg font-bold text-center text-white tracking-tight">カテゴリー追加</h3>
@@ -234,7 +237,6 @@
         </div>
     </div>
 
-    <!-- Delete Confirm Modal -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-black/95 z-[70] flex items-center justify-center hidden p-6 backdrop-blur-xl">
         <div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-10 space-y-8 shadow-2xl border border-rose-500/20 text-center">
             <div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-2 text-2xl">⚠️</div>
@@ -249,7 +251,6 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
     <div id="settingsModal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center hidden p-4 backdrop-blur-xl">
         <div class="bg-slate-950 w-full max-w-sm rounded-[3rem] p-10 space-y-10 shadow-2xl max-h-[90vh] overflow-y-auto border border-white/10 safe-pb">
             <h3 class="text-2xl font-bold text-center text-white tracking-tight">設定</h3>
@@ -348,25 +349,31 @@
                 }
             });
 
-            // 予算の残り金額
-            const remaining = appState.monthlyBudget - varTotal;
+            // 今月余剰資金（今月の残金）
+            const remainingMonthly = appState.monthlyBudget - varTotal;
             
             /**
-             * 【ロジック修正】 本日予算の計算
-             * 今月残っている金額を、締め日までの残り日数で割る。
-             * 支出を入力するたびに varTotal が増えるため、リアルタイムで本日予算が減少します。
+             * 【ロジック修正】 本日予算
+             * 常に「今月余剰資金 ÷ 締めまで残り日数」
              */
-            const dailyAllowance = Math.floor(remaining / cycle.daysLeft);
-            const usagePercent = Math.min(100, Math.round((varTotal / appState.monthlyBudget) * 100)) || 0;
-            
-            // 本日の余剰資金（本日分の予算に対してあといくら使えるか）
-            // ここも本日予算と連動した値に
-            const todayBalance = dailyAllowance; 
+            const dailyBudget = Math.floor(remainingMonthly / cycle.daysLeft);
 
-            formatBudgetDisplay(dailyAllowance, document.getElementById('dailyAllowance'));
+            /**
+             * 【ロジック修正】 本日の余剰資金
+             * 「今日リセット時点での本日予算」 － 本日支出
+             * ※リセット時点の予算 = (今月余剰資金 + 本日支出) / 残り日数
+             */
+            const initialDailyBudgetToday = Math.floor((remainingMonthly + spentToday) / cycle.daysLeft);
+            const todaySurplus = initialDailyBudgetToday - spentToday;
+
+            const usagePercent = Math.min(100, Math.round((varTotal / appState.monthlyBudget) * 100)) || 0;
+
+            // 表示更新
+            formatBudgetDisplay(dailyBudget, document.getElementById('dailyAllowance'));
             document.getElementById('spentToday').innerText = `¥${spentToday.toLocaleString()}`;
-            formatTodayBalance(todayBalance, document.getElementById('todayBalance'));
-            formatBudgetDisplay(remaining, document.getElementById('remainingBudget'));
+            formatTodayBalance(todaySurplus, document.getElementById('todayBalance'));
+            
+            formatBudgetDisplay(remainingMonthly, document.getElementById('remainingBudget'));
             document.getElementById('usagePercent').innerText = `${usagePercent}%`;
             document.getElementById('progressFill').style.width = `${usagePercent}%`;
             document.getElementById('daysLeft').innerText = `${cycle.daysLeft}日`;
