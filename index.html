@@ -7,7 +7,7 @@
     <!-- PWA / iOS Optimization -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="家計簿">
+    <meta name="apple-mobile-web-app-title" content="家計簿 Pro">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2652/2652234.png">
     
     <title>Budget Tracker Pro</title>
@@ -88,7 +88,6 @@
             transition: width 0.5s ease-out;
         }
 
-        /* カスタム通知トースト */
         #toast {
             position: fixed;
             top: 20px;
@@ -117,7 +116,6 @@
     <div id="view-main" class="animate-fade-in min-h-screen pb-40">
         <header class="bg-black/60 border-b border-white/5 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4">
             <div class="max-w-md mx-auto flex justify-between items-center">
-                <!-- 期間表示部分をタップ可能に -->
                 <div id="main-cycle-trigger" class="active-scale cursor-pointer pr-4">
                     <p id="main-cycle-range" class="text-[11px] font-black text-gray-500 tracking-widest">--/-- ~ --/--</p>
                     <span id="main-cycle-badge" class="text-[9px] bg-white/5 text-gray-400 px-1.5 py-0.5 rounded-md border border-white/5 font-bold">--日間</span>
@@ -132,6 +130,7 @@
         </header>
 
         <main class="max-w-md mx-auto px-4 mt-6 space-y-8">
+            <!-- 予算カード -->
             <section>
                 <div class="glass-card p-7 rounded-[2.5rem] shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10">
                     <div class="relative z-10 space-y-6">
@@ -166,6 +165,7 @@
                     </div>
                 </div>
             </section>
+            <!-- カテゴリー合計ボタン -->
             <section class="grid grid-cols-2 gap-4">
                 <div id="main-trigger-variable" class="bg-slate-900/60 p-6 rounded-[2.2rem] border border-white/5 shadow-inner active-scale cursor-pointer hover:bg-slate-800 transition-colors relative">
                     <p class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-1">変動費合計 ↗</p>
@@ -176,6 +176,7 @@
                     <p class="text-xl font-black text-amber-500" id="main-total-savings">¥0</p>
                 </div>
             </section>
+            <!-- 履歴 -->
             <section class="space-y-4">
                 <div class="flex items-center justify-between px-2">
                     <h2 class="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em]">Recently Records</h2>
@@ -186,7 +187,7 @@
         </main>
     </div>
 
-    <!-- VIEW 2: 未来計画 -->
+    <!-- VIEW 2: 未来計画 (PLAN) -->
     <div id="view-plan" class="view-hidden animate-fade-in min-h-screen pb-40">
         <header class="bg-black/60 border-b border-white/5 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4 text-center">
             <h1 class="text-lg font-black tracking-widest text-white uppercase">Future Planning</h1>
@@ -209,33 +210,32 @@
         </main>
     </div>
 
-    <!-- VIEW 5: 履歴月選択 (新規) -->
+    <!-- VIEW 5: 履歴月選択 -->
     <div id="view-history-select" class="view-hidden animate-fade-in min-h-screen pb-10">
         <header class="bg-black/60 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4 border-b border-white/5">
             <div class="max-w-md mx-auto flex items-center gap-4">
-                <button onclick="navigateBack()" class="p-2 -ml-2 text-gray-400 active-scale">
+                <button id="backBtnHistorySelect" class="p-2 -ml-2 text-gray-400 active-scale">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 </button>
                 <h1 class="text-lg font-black tracking-tight text-white uppercase tracking-widest">Select Cycle</h1>
             </div>
         </header>
         <main class="max-w-md mx-auto px-4 mt-6">
-            <div id="history-month-list" class="space-y-3">
-                <!-- JSで挿入 -->
-            </div>
+            <div id="history-month-list" class="space-y-3"></div>
         </main>
     </div>
 
-    <!-- VIEW 3: 集計画面 -->
+    <!-- VIEW 3: 集計画面 (Stats) -->
     <div id="view-summary" class="view-hidden animate-fade-in min-h-screen pb-10">
         <header class="bg-black/60 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4 border-b border-white/5">
             <div class="max-w-md mx-auto flex items-center gap-4">
                 <button id="backBtnSummary" class="p-2 -ml-2 text-gray-400 active-scale"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>
-                <h1 id="summary-title" class="text-lg font-black tracking-tight text-white">集計</h1>
+                <h1 id="summary-title" class="text-lg font-black tracking-tight text-white uppercase tracking-wider">Cycle Statistics</h1>
             </div>
         </header>
 
         <main class="max-w-md mx-auto px-4 mt-6 space-y-6">
+            <!-- サイクル切り替え -->
             <div class="glass-card rounded-[2rem] p-5 flex items-center justify-between shadow-lg">
                 <button id="prevMonthBtn" class="p-3 text-gray-500 active-scale hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M15 19l-7-7 7-7"/></svg></button>
                 <div class="text-center">
@@ -245,8 +245,9 @@
                 <button id="nextMonthBtn" class="p-3 text-gray-500 active-scale hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"/></svg></button>
             </div>
 
+            <!-- 月単位実績ダッシュボード -->
             <section id="summary-stats-overview" class="space-y-4">
-                <div class="glass-card p-6 rounded-[2.2rem] bg-slate-900/40 border border-white/5">
+                <div class="glass-card p-6 rounded-[2.2rem] bg-slate-900/40 border border-white/5 relative overflow-hidden">
                     <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Cycle Overview</p>
                     <div class="grid grid-cols-3 gap-2 text-center mb-6">
                         <div>
@@ -265,35 +266,42 @@
                     <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
                         <div class="flex items-center gap-2">
                             <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
-                            <p class="text-[10px] text-gray-400 font-bold">変動費: <span id="cycle-stat-var" class="text-gray-100 font-black ml-1">¥0</span></p>
+                            <p class="text-[10px] text-gray-400 font-bold leading-tight">変動費: <span id="cycle-stat-var" class="text-gray-100 font-black ml-1">¥0</span></p>
                         </div>
                         <div class="flex items-center gap-2">
                             <div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
-                            <p class="text-[10px] text-gray-400 font-bold">貯蓄から: <span id="cycle-stat-sav" class="text-gray-100 font-black ml-1">¥0</span></p>
+                            <p class="text-[10px] text-gray-400 font-bold leading-tight">貯蓄から: <span id="cycle-stat-sav" class="text-gray-100 font-black ml-1">¥0</span></p>
                         </div>
                     </div>
                 </div>
             </section>
 
+            <!-- 内訳切り替え用タブ -->
+            <div class="flex p-1 bg-white/5 rounded-2xl border border-white/10 mx-2">
+                <button id="summaryTabVar" class="flex-1 py-2 rounded-xl font-black text-[10px] transition-all">🛒 変動費</button>
+                <button id="summaryTabSav" class="flex-1 py-2 rounded-xl font-black text-[10px] transition-all">💰 貯蓄から</button>
+            </div>
+
+            <!-- カテゴリー別合計リスト -->
             <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Category Breakdown</h3>
-                <div id="summary-category-list" class="space-y-3"></div>
+                <h3 id="breakdown-list-title" class="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Variable Breakdown</h3>
+                <div id="summary-category-list" class="space-y-3 pb-20"></div>
             </div>
         </main>
     </div>
 
-    <!-- VIEW 4: 詳細 -->
+    <!-- VIEW 4: 詳細明細 -->
     <div id="view-detail" class="view-hidden animate-fade-in min-h-screen pb-10">
         <header class="bg-black/60 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4 border-b border-white/5">
             <div class="max-w-md mx-auto flex items-center gap-4">
                 <button id="backBtnDetail" class="p-2 -ml-2 text-gray-400 active-scale"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>
-                <h1 id="detail-title" class="text-lg font-black tracking-tight text-white">詳細</h1>
+                <h1 id="detail-title" class="text-lg font-black tracking-tight text-white uppercase tracking-wider">Transaction List</h1>
             </div>
         </header>
         <main class="max-w-md mx-auto px-4 mt-6"><div id="detail-transaction-list" class="space-y-3"></div></main>
     </div>
 
-    <!-- タブバー -->
+    <!-- 共通ナビゲーション -->
     <nav id="bottom-tabs" class="fixed bottom-0 left-0 right-0 z-40 tab-bar safe-pb">
         <div class="max-w-md mx-auto flex justify-around items-center h-16">
             <button id="tabItemMain" class="tab-item flex flex-col items-center gap-1 active">
@@ -312,21 +320,22 @@
         </button>
     </div>
 
-    <!-- モーダル群 -->
+    <!-- モーダル: 支出入力 -->
     <div id="entryModal" class="fixed inset-0 bg-black/90 z-50 flex items-end justify-center hidden backdrop-blur-md">
         <div class="bg-slate-950 w-full max-w-md rounded-t-[3rem] p-8 pb-12 space-y-8 border-t border-white/10 safe-pb shadow-2xl overflow-y-auto max-h-[96vh]">
             <div class="flex justify-between items-center"><h3 id="modalTitle" class="text-xl font-black text-white">支出を入力</h3><button id="closeModal" class="text-gray-600 bg-white/5 p-2 rounded-full">&times;</button></div>
             <input type="hidden" id="editId">
             <div class="space-y-8">
-                <div class="text-center"><label class="block text-[10px] text-gray-500 uppercase font-black">Amount</label><div class="flex items-center justify-center gap-2"><span class="text-3xl font-bold text-blue-500">¥</span><input type="number" id="amountInput" inputmode="numeric" placeholder="0" class="text-6xl font-black text-white bg-transparent border-none focus:ring-0 outline-none w-64 text-center"></div></div>
-                <div class="space-y-4"><div class="bg-white/5 rounded-2xl p-4 flex justify-between"><label class="text-[10px] text-gray-500 font-black">Date</label><input type="date" id="dateInput" class="bg-transparent text-white font-bold outline-none"></div><input type="text" id="memoInput" placeholder="メモ（任意）" class="w-full bg-white/5 px-6 py-5 rounded-2xl outline-none text-white text-lg font-medium border border-white/5"></div>
+                <div class="text-center"><label class="block text-[10px] text-gray-500 uppercase font-black tracking-widest">Amount</label><div class="flex items-center justify-center gap-2"><span class="text-3xl font-bold text-blue-500">¥</span><input type="number" id="amountInput" inputmode="numeric" placeholder="0" class="text-6xl font-black text-white bg-transparent border-none focus:ring-0 outline-none w-64 text-center"></div></div>
+                <div class="space-y-4"><div class="bg-white/5 rounded-2xl p-4 flex justify-between items-center"><label class="text-[10px] text-gray-500 font-black tracking-widest uppercase">Date</label><input type="date" id="dateInput" class="bg-transparent text-white font-bold outline-none"></div><input type="text" id="memoInput" placeholder="メモ（任意）" class="w-full bg-white/5 px-6 py-5 rounded-2xl outline-none text-white text-lg font-medium border border-white/5 placeholder:text-gray-700"></div>
                 <div class="flex p-1 bg-black rounded-2xl border border-white/10"><button class="type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px]" data-type="variable" id="tabVar">🛒 変動費</button><button class="type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px]" data-type="savings" id="tabSav">💰 貯蓄から</button></div>
                 <div id="categoryGrid" class="flex flex-wrap gap-2.5"></div>
-                <div class="flex gap-4 pt-6"><button id="deleteEntryBtn" class="hidden flex-1 bg-rose-500/10 text-rose-500 font-black py-5 rounded-[2rem]">削除</button><button id="saveBtn" class="flex-[3] bg-blue-600 text-white font-black py-5 rounded-[2.5rem] shadow-xl text-lg">保存</button></div>
+                <div class="flex gap-4 pt-6"><button id="deleteEntryBtn" class="hidden flex-1 bg-rose-500/10 text-rose-500 font-black py-5 rounded-[2rem] active-scale">削除</button><button id="saveBtn" class="flex-[3] bg-blue-600 text-white font-black py-5 rounded-[2.5rem] shadow-xl text-lg active-scale">保存</button></div>
             </div>
         </div>
     </div>
 
+    <!-- モーダル: 計画入力 -->
     <div id="planModal" class="fixed inset-0 bg-black/95 z-[60] flex items-center justify-center hidden p-4 backdrop-blur-xl">
         <div class="bg-slate-900 w-full max-w-sm rounded-[3rem] p-8 space-y-6 border border-white/10 shadow-2xl">
             <h3 class="text-xl font-black text-center text-white" id="planModalTitle">計画</h3>
@@ -336,57 +345,69 @@
                 <div><label class="text-[10px] text-gray-500 font-black uppercase">現在の貯金額 (¥)</label><input type="number" id="planCurrentInput" inputmode="numeric" placeholder="0" class="w-full bg-white/5 rounded-2xl px-5 py-4 outline-none text-white font-black border border-white/5"></div>
                 <div><label class="text-[10px] text-gray-500 font-black uppercase">貯めきりたい日</label><input type="date" id="planDateInput" class="w-full bg-white/5 rounded-2xl px-5 py-4 outline-none text-white font-bold border border-white/5"></div>
             </div>
-            <div class="flex gap-3 pt-4"><button id="deletePlanBtn" class="view-hidden flex-1 bg-rose-500/10 text-rose-500 py-4 rounded-2xl font-bold">削除</button><button id="closePlanModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold">中止</button><button id="confirmAddPlan" class="flex-[2] bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">保存</button></div>
+            <div class="flex gap-3 pt-4"><button id="deletePlanBtn" class="view-hidden flex-1 bg-rose-500/10 text-rose-500 py-4 rounded-2xl font-bold active-scale">削除</button><button id="closePlanModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button><button id="confirmAddPlan" class="flex-[2] bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">保存</button></div>
         </div>
     </div>
 
-    <!-- 設定 -->
+    <!-- 設定 & バックアップ -->
     <div id="settingsModal" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center hidden p-4 backdrop-blur-xl">
         <div class="bg-slate-950 w-full max-w-sm rounded-[3rem] p-10 space-y-10 border border-white/10 safe-pb max-h-[90vh] overflow-y-auto shadow-2xl">
             <h3 class="text-2xl font-black text-center text-white tracking-tight">Settings</h3>
             <div class="space-y-8">
-                <div><label class="text-[10px] text-gray-500 font-black uppercase block">月間予算 (¥)</label><input type="number" id="monthlyBudgetInput" class="w-full text-3xl font-black border-b-2 border-white/5 bg-transparent text-white outline-none py-3"></div>
-                <div><label class="text-[10px] text-gray-500 font-black uppercase block">サイクルの開始日</label><input type="number" id="startDayInput" min="1" max="31" class="w-24 text-3xl font-black border-b-2 border-white/5 bg-transparent text-white outline-none py-3 text-center"></div>
+                <div><label class="text-[10px] text-gray-500 font-black uppercase block">月間予算 (¥)</label><input type="number" id="monthlyBudgetInput" class="w-full text-3xl font-black border-b-2 border-white/5 bg-transparent text-white outline-none py-3 focus:border-blue-500"></div>
+                <div><label class="text-[10px] text-gray-500 font-black uppercase block">サイクルの開始日</label><input type="number" id="startDayInput" min="1" max="31" class="w-24 text-3xl font-black border-b-2 border-white/5 bg-transparent text-white outline-none py-3 text-center focus:border-blue-500"></div>
             </div>
             <div class="space-y-4 pt-6 border-t border-white/5">
-                <label class="text-[10px] text-gray-500 font-black uppercase block tracking-widest">全データの一括移行</label>
+                <label class="text-[10px] text-gray-500 font-black uppercase block tracking-widest">Data Management</label>
                 <div class="grid grid-cols-2 gap-3">
-                    <button id="exportBtn" class="bg-white/5 text-gray-300 py-4 rounded-2xl text-[10px] font-black border border-white/5 active-scale">全データをコピー</button>
-                    <button id="importBtn" class="bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black shadow-lg active-scale">全データを復元</button>
+                    <button id="exportBtn" class="bg-white/5 text-gray-300 py-3 rounded-2xl text-[10px] font-black border border-white/5 active-scale">全データをコピー</button>
+                    <button id="importBtn" class="bg-blue-600 text-white py-3 rounded-2xl text-[10px] font-black shadow-lg active-scale">全データを復元</button>
                 </div>
             </div>
             <div class="space-y-6 pt-6 border-t border-white/5"><div id="catManageVar" class="space-y-3"></div><div id="catManageSav" class="space-y-3"></div></div>
-            <button id="clearBtn" class="w-full py-4 text-[10px] font-black text-rose-800 transition uppercase tracking-widest">Clear Data</button>
-            <div class="flex gap-4 pt-4"><button id="closeSettings" class="flex-1 bg-white/5 text-gray-400 py-5 rounded-[2rem] font-bold">戻る</button><button id="saveSettings" class="flex-1 bg-blue-600 text-white py-5 rounded-[2.5rem] font-black shadow-lg">保存</button></div>
+            <button id="clearBtn" class="w-full py-4 text-[10px] font-black text-rose-800 transition uppercase tracking-widest active-scale">Clear Local Data</button>
+            <div class="flex gap-4 pt-4"><button id="closeSettings" class="flex-1 bg-white/5 text-gray-400 py-5 rounded-[2rem] font-bold active-scale">戻る</button><button id="saveSettings" class="flex-1 bg-blue-600 text-white py-5 rounded-[2.5rem] font-black shadow-lg active-scale">保存</button></div>
         </div>
     </div>
 
+    <!-- データ復元モーダル -->
     <div id="importModal" class="fixed inset-0 bg-black/95 z-[120] flex items-center justify-center hidden p-4 backdrop-blur-xl">
         <div class="bg-slate-900 w-full max-w-sm rounded-[3rem] p-8 space-y-6 border border-white/10 shadow-2xl">
             <h3 class="text-lg font-bold text-white text-center">データ復元</h3>
-            <textarea id="importArea" class="w-full h-40 bg-black border border-white/10 rounded-2xl p-4 text-[9px] text-blue-400 font-mono outline-none"></textarea>
-            <div class="flex gap-3"><button id="closeImportModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold">中止</button><button id="confirmImport" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">復元を実行</button></div>
+            <textarea id="importArea" class="w-full h-40 bg-black border border-white/10 rounded-2xl p-4 text-[9px] text-blue-400 font-mono outline-none" placeholder="JSONデータをここにペーストしてください"></textarea>
+            <div class="flex gap-3"><button id="closeImportModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button><button id="confirmImport" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">復元を実行</button></div>
         </div>
     </div>
 
-    <div id="deleteConfirmModal" class="fixed inset-0 bg-black/95 z-[110] flex items-center justify-center hidden p-6 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-10 space-y-8 border border-rose-500/20 text-center shadow-2xl"><div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold font-bold">!</div><h3 class="text-lg font-bold text-white">削除しますか？</h3><div class="space-y-3"><button id="confirmDeleteAction" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">削除する</button><button id="cancelDeleteAction" class="w-full bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">キャンセル</button></div></div></div>
-    <div id="catInputModal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center hidden p-4 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-8 space-y-6 border border-white/10 shadow-2xl"><h3 class="text-lg font-bold text-center text-white">カテゴリー追加</h3><input type="text" id="newCatNameInput" placeholder="名称" class="w-full bg-white/5 rounded-2xl px-6 py-4 outline-none text-white text-lg border border-white/5 focus:border-blue-500"><div class="flex gap-3"><button id="closeCatInputModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold">中止</button><button id="confirmAddCat" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">決定</button></div></div></div>
+    <!-- 各種確認・追加 -->
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-black/95 z-[110] flex items-center justify-center hidden p-6 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-10 space-y-8 border border-rose-500/20 text-center shadow-2xl"><div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">!</div><h3 class="text-lg font-bold text-white">削除しますか？</h3><div class="space-y-3"><button id="confirmDeleteAction" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">削除する</button><button id="cancelDeleteAction" class="w-full bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">キャンセル</button></div></div></div>
+    <div id="catInputModal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center hidden p-4 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-8 space-y-6 border border-white/10 shadow-2xl"><h3 class="text-lg font-bold text-center text-white">カテゴリー追加</h3><input type="text" id="newCatNameInput" placeholder="名称" class="w-full bg-white/5 rounded-2xl px-6 py-4 outline-none text-white text-lg border border-white/5 focus:border-blue-500"><div class="flex gap-3"><button id="closeCatInputModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button><button id="confirmAddCat" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">決定</button></div></div></div>
 
     <script>
         // ==========================================
         // 1. STATE & STORAGE
         // ==========================================
         let appState = {
-            monthlyBudget: 50000, startDay: 25,
+            monthlyBudget: 50000, 
+            startDay: 25,
             categories: { variable: ["仕事食費", "食費", "日用品", "交通費", "趣味"], savings: ["貯金", "旅費交通費", "病院", "自己投資"] },
-            transactions: [], plans: []
+            transactions: [], 
+            plans: [],
+            historicalBudgets: {} // サイクルごとの予算記録
         };
-        const STORAGE_KEY = 'budget_pro_final_all_data'; 
+        const STORAGE_KEY = 'budget_pro_v5_all_data'; 
         let viewHistory = ['view-main'], currentType = 'variable', selectedCategory = '', editingId = null, editingPlanId = null;
         let summaryContext = { type: 'variable', date: new Date() }, detailContext = { category: '', type: 'variable' }, targetCatAddType = 'variable';
 
         const saveToStorage = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-        const loadFromStorage = () => { const saved = localStorage.getItem(STORAGE_KEY); if (saved) { appState = { ...appState, ...JSON.parse(saved) }; } };
+        const loadFromStorage = () => { 
+            const saved = localStorage.getItem(STORAGE_KEY); 
+            if (saved) { 
+                const data = JSON.parse(saved);
+                appState = { ...appState, ...data };
+                if (!appState.historicalBudgets) appState.historicalBudgets = {};
+            } 
+        };
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -440,6 +461,7 @@
             }
         }
         function navigateBack() { if (viewHistory.length > 1) { viewHistory.pop(); navigateTo(viewHistory[viewHistory.length - 1]); } }
+        
         function switchTab(tabId) {
             viewHistory = [`view-${tabId}`];
             document.querySelectorAll('[id^="view-"]').forEach(v => v.classList.add('view-hidden'));
@@ -462,7 +484,7 @@
         }
 
         // ==========================================
-        // 4. RENDERING
+        // 3. RENDERING
         // ==========================================
         function renderMain() {
             const cycle = getCycleInfo(), planTotal = getMonthlyPlanRequirement(), todayStr = formatDateForInput(new Date());
@@ -485,7 +507,7 @@
             const infoEl = document.getElementById('savings-deduction-info'); if (infoEl) { infoEl.classList.toggle('view-hidden', planTotal <= 0); safeUpdate('main-monthly-plan-total', `- ¥${planTotal.toLocaleString()}`); }
             const list = document.getElementById('main-history-list'); if (list) {
                 const recent = [...appState.transactions].sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
-                list.innerHTML = recent.length ? '' : '<p class="text-center py-10 text-gray-700 text-[10px] font-black italic">NO RECORDS</p>';
+                list.innerHTML = recent.length ? '' : '<p class="text-center py-10 text-gray-700 text-[10px] font-black italic uppercase">No Records</p>';
                 recent.forEach(t => list.appendChild(createRow(t)));
             }
         }
@@ -502,99 +524,74 @@
                 const daysUntilDeadline = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
                 let mReq = (targetDate <= currentCycle.end) ? remainingAmount : Math.min(remainingAmount, Math.floor((remainingAmount / daysUntilDeadline) * 30));
                 const progress = Math.min(100, Math.round((p.current / p.target) * 100)) || 0;
-                const card = document.createElement('div'); card.className = "glass-card p-6 rounded-[2rem] space-y-4 border border-white/5 active-scale cursor-pointer relative overflow-hidden shadow-lg";
+                const card = document.createElement('div'); card.className = "glass-card p-6 rounded-[2rem] space-y-4 border border-white/5 active-scale cursor-pointer relative overflow-hidden shadow-lg transition-all";
                 card.onclick = () => editPlan(idx);
-                card.innerHTML = `<div class="flex justify-between items-start relative z-10"><div><h3 class="font-black text-white text-lg leading-tight">${p.name}</h3><p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">${p.deadline.replace(/-/g, '/')} まで</p></div><div class="text-right"><p class="text-[10px] text-blue-400 font-black mb-1 uppercase text-right">目標金額</p><p class="text-xl font-black text-white">¥${p.target.toLocaleString()}</p></div></div><div class="space-y-2 relative z-10"><div class="flex justify-between items-end"><p class="text-[9px] font-black text-gray-400 uppercase tracking-tighter">進行度: ${progress}%</p><p class="text-[10px] font-bold text-gray-200">¥${p.current.toLocaleString()} / ¥${p.target.toLocaleString()}</p></div><div class="progress-container"><div class="progress-fill bg-blue-500" style="width: ${progress}%"></div></div></div><div class="flex justify-between items-center pt-1 relative z-10"><span class="text-[9px] text-gray-500 font-bold">残り ${daysUntilDeadline} 日</span><span class="text-[9px] text-blue-300 font-bold bg-blue-500/10 px-2 py-0.5 rounded-lg">今月の天引き額: ¥${Math.floor(mReq).toLocaleString()}</span></div>`;
+                card.innerHTML = `<div class="flex justify-between items-start relative z-10"><div><h3 class="font-black text-white text-lg leading-tight tracking-tight">${p.name}</h3><p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">${p.deadline.replace(/-/g, '/')} まで</p></div><div class="text-right"><p class="text-[10px] text-blue-400 font-black mb-1 uppercase text-right">目標金額</p><p class="text-xl font-black text-white">¥${p.target.toLocaleString()}</p></div></div><div class="space-y-2 relative z-10"><div class="flex justify-between items-end"><p class="text-[9px] font-black text-gray-400 uppercase tracking-tighter">進行度: ${progress}%</p><p class="text-[10px] font-bold text-gray-200">¥${p.current.toLocaleString()} / ¥${p.target.toLocaleString()}</p></div><div class="progress-container"><div class="progress-fill bg-blue-500" style="width: ${progress}%"></div></div></div><div class="flex justify-between items-center pt-1 relative z-10"><span class="text-[9px] text-gray-500 font-bold">残り ${daysUntilDeadline} 日</span><span class="text-[9px] text-blue-300 font-bold bg-blue-500/10 px-2 py-0.5 rounded-lg">今月の天引き額: ¥${Math.floor(mReq).toLocaleString()}</span></div>`;
                 list.appendChild(card);
             });
         }
 
-        // 月選択リストのレンダリング (新規)
+        // 月選択リスト
         function renderHistorySelect() {
-            const list = document.getElementById('history-month-list');
-            if (!list) return;
-            list.innerHTML = '';
-            
+            const list = document.getElementById('history-month-list'); if (!list) return; list.innerHTML = '';
             const today = new Date();
-            // 過去12サイクル分を表示
             for (let i = 0; i < 12; i++) {
                 const checkDate = new Date(today.getFullYear(), today.getMonth() - i, today.getDate());
                 const cycle = getCycleInfo(checkDate);
-                
-                // そのサイクルの支出合計を計算
-                let total = 0;
+                let vTotal = 0, sTotal = 0;
                 appState.transactions.forEach(t => {
                     if (t.timestamp >= cycle.start.getTime() && t.timestamp <= cycle.end.getTime()) {
-                        total += t.amount;
+                        if (t.type === 'variable') vTotal += t.amount; else sTotal += t.amount;
                     }
                 });
-
-                const div = document.createElement('div');
-                div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between border border-white/5 active-scale cursor-pointer shadow-md";
-                div.onclick = () => {
-                    summaryContext.date = checkDate;
-                    summaryContext.type = 'variable';
-                    navigateTo('view-summary');
-                };
-                div.innerHTML = `
-                    <div>
-                        <p class="text-sm font-black text-white">${cycle.start.getFullYear()}年 ${cycle.start.getMonth() + 1}月サイクル</p>
-                        <p class="text-[9px] text-gray-500 font-bold uppercase mt-1 tracking-widest">${cycle.rangeText}</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-[8px] text-gray-500 font-black uppercase mb-0.5">Total Spent</p>
-                        <p class="text-sm font-black text-blue-400">¥${total.toLocaleString()}</p>
-                    </div>
-                `;
+                const div = document.createElement('div'); div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between border border-white/5 active-scale cursor-pointer shadow-md";
+                div.onclick = () => { summaryContext.date = checkDate; summaryContext.type = 'variable'; navigateTo('view-summary'); };
+                div.innerHTML = `<div><p class="text-sm font-black text-white">${cycle.start.getFullYear()}年 ${cycle.start.getMonth() + 1}月</p><p class="text-[9px] text-gray-600 font-bold mt-1 tracking-widest">${cycle.rangeText}</p></div><div class="text-right"><p class="text-[9px] font-bold text-rose-400">🛒 ¥${vTotal.toLocaleString()}</p><p class="text-[9px] font-bold text-amber-500">💰 ¥${sTotal.toLocaleString()}</p></div>`;
                 list.appendChild(div);
             }
         }
 
+        // 集計画面 (修正版: 過去予算 & 変動費/貯蓄切り替え)
         function renderSummary() {
-            const cycle = getCycleInfo(summaryContext.date);
-            const isVar = summaryContext.type === 'variable';
+            const cycle = getCycleInfo(summaryContext.date), cycleKey = cycle.start.getTime(), isVar = summaryContext.type === 'variable';
             const planTotal = getMonthlyPlanRequirement(summaryContext.date);
-            
-            safeUpdate('summary-cycle-range', cycle.rangeText);
-            safeUpdate('summary-month-label', `${cycle.start.getFullYear()}年 ${cycle.start.getMonth()+1}月分`);
+            safeUpdate('summary-cycle-range', cycle.rangeText); safeUpdate('summary-month-label', `${cycle.start.getFullYear()}年 ${cycle.start.getMonth()+1}月分`);
 
-            let cycleVarTotal = 0; let cycleSavTotal = 0;
+            // 正確な過去予算の取得 (なければ現在予算)
+            const historicalBudget = appState.historicalBudgets[cycleKey] || appState.monthlyBudget;
+
+            let cycleVarTotal = 0, cycleSavTotal = 0;
             const categoryBreakdown = {};
             [...appState.categories.variable, ...appState.categories.savings].forEach(c => categoryBreakdown[c] = 0);
-
             appState.transactions.forEach(t => {
                 if (t.timestamp >= cycle.start.getTime() && t.timestamp <= cycle.end.getTime()) {
-                    if (t.type === 'variable') cycleVarTotal += t.amount;
-                    else cycleSavTotal += t.amount;
+                    if (t.type === 'variable') cycleVarTotal += t.amount; else cycleSavTotal += t.amount;
                     if (categoryBreakdown[t.category] !== undefined) categoryBreakdown[t.category] += t.amount;
                 }
             });
 
-            const totalSpent = cycleVarTotal + cycleSavTotal;
-            const totalBudget = appState.monthlyBudget - planTotal; 
-            const surplus = totalBudget - cycleVarTotal;
-
-            safeUpdate('cycle-stat-budget', `¥${totalBudget.toLocaleString()}`);
-            safeUpdate('cycle-stat-spent', `¥${totalSpent.toLocaleString()}`);
-            safeUpdate('cycle-stat-surplus', `¥${surplus.toLocaleString()}`);
-            safeUpdate('cycle-stat-var', `¥${cycleVarTotal.toLocaleString()}`);
-            safeUpdate('cycle-stat-sav', `¥${cycleSavTotal.toLocaleString()}`);
+            const effectiveBudget = historicalBudget - planTotal, surplus = effectiveBudget - cycleVarTotal;
+            safeUpdate('cycle-stat-budget', `¥${effectiveBudget.toLocaleString()}`); safeUpdate('cycle-stat-spent', `¥${(cycleVarTotal + cycleSavTotal).toLocaleString()}`);
+            safeUpdate('cycle-stat-surplus', `¥${surplus.toLocaleString()}`); safeUpdate('cycle-stat-var', `¥${cycleVarTotal.toLocaleString()}`); safeUpdate('cycle-stat-sav', `¥${cycleSavTotal.toLocaleString()}`);
 
             const surplusEl = document.getElementById('cycle-stat-surplus');
             if (surplusEl) surplusEl.className = `text-sm font-black ${surplus < 0 ? 'text-rose-500' : 'text-emerald-400'}`;
 
+            // タブの強調
+            const tabV = document.getElementById('summaryTabVar'), tabS = document.getElementById('summaryTabSav');
+            if(tabV) tabV.className = `flex-1 py-2 rounded-xl font-black text-[10px] transition-all ${isVar ? 'bg-slate-800 text-blue-400 shadow-lg' : 'text-gray-600'}`;
+            if(tabS) tabS.className = `flex-1 py-2 rounded-xl font-black text-[10px] transition-all ${!isVar ? 'bg-slate-800 text-amber-400 shadow-lg' : 'text-gray-600'}`;
+            safeUpdate('breakdown-list-title', isVar ? 'Variable Breakdown' : 'Savings Breakdown');
+
             const list = document.getElementById('summary-category-list');
-            if (!list) return;
-            list.innerHTML = '';
+            if (!list) return; list.innerHTML = '';
             const currentCategories = appState.categories[summaryContext.type];
-            currentCategories.map(name => ({ name, total: categoryBreakdown[name] }))
-                .sort((a,b) => b.total - a.total).forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between active-scale cursor-pointer border border-white/5 shadow-md";
-                    div.onclick = () => { detailContext = { category: item.name, type: summaryContext.type }; navigateTo('view-detail'); };
-                    div.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl ${isVar ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center text-[10px] font-black border border-white/5">${item.name.substring(0,2)}</div><p class="font-bold text-gray-200 text-sm">${item.name}</p></div><p class="font-black text-white text-lg">¥${item.total.toLocaleString()}</p>`;
-                    list.appendChild(div);
-                });
+            currentCategories.map(name => ({ name, total: categoryBreakdown[name] })).sort((a,b) => b.total - a.total).forEach(item => {
+                const div = document.createElement('div'); div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between active-scale cursor-pointer border border-white/5 shadow-md";
+                div.onclick = () => { detailContext = { category: item.name, type: summaryContext.type }; navigateTo('view-detail'); };
+                div.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl ${isVar ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center text-[10px] font-black border border-white/5">${item.name.substring(0,2)}</div><p class="font-bold text-gray-200 text-sm">${item.name}</p></div><p class="font-black text-white text-lg">¥${item.total.toLocaleString()}</p>`;
+                list.appendChild(div);
+            });
         }
 
         function renderDetail() {
@@ -608,7 +605,7 @@
         function createRow(t) {
             const div = document.createElement('div'); div.className = "bg-slate-900/40 p-5 rounded-[1.8rem] flex items-center justify-between border border-white/5 active:bg-white/5 transition-all cursor-pointer active-scale shadow-sm";
             div.onclick = (e) => { e.stopPropagation(); openEditModal(t); }; const d = new Date(t.timestamp);
-            div.innerHTML = `<div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl ${t.type === 'variable' ? 'bg-blue-600/10 text-blue-500' : 'bg-amber-600/10 text-amber-400'} flex items-center justify-center text-[9px] font-black border border-white/5">${t.category.substring(0,2)}</div><div><p class="font-bold text-gray-100 text-[13px]">${t.memo || t.category}</p><p class="text-[9px] text-gray-600 font-black mt-1 uppercase">${d.getMonth()+1}/${d.getDate()} • ${t.category}</p></div></div><p class="font-bold text-gray-100 text-sm">¥${t.amount.toLocaleString()}</p>`;
+            div.innerHTML = `<div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl ${t.type === 'variable' ? 'bg-blue-600/10 text-blue-500' : 'bg-amber-600/10 text-amber-400'} flex items-center justify-center text-[9px] font-black border border-white/5">${t.category.substring(0,2)}</div><div><p class="font-bold text-gray-100 text-[13px] tracking-tight">${t.memo || t.category}</p><p class="text-[9px] text-gray-600 font-black mt-1 uppercase">${d.getMonth()+1}/${d.getDate()} • ${t.category}</p></div></div><p class="font-bold text-gray-100 text-sm">¥${t.amount.toLocaleString()}</p>`;
             return div;
         }
 
@@ -623,8 +620,7 @@
                     const div = document.createElement('div'); div.className = "flex items-center gap-3 bg-black p-4 rounded-2xl border border-white/5 mb-2 shadow-sm";
                     div.innerHTML = `<input type="text" value="${cat}" class="flex-1 bg-transparent text-sm font-bold text-gray-200 outline-none" id="cat-input-${type}-${idx}"><button class="text-gray-700 hover:text-rose-500 text-xl font-black active-scale" id="cat-del-${type}-${idx}">&times;</button>`;
                     container.appendChild(div);
-                    const inp = document.getElementById(`cat-input-${type}-${idx}`);
-                    const del = document.getElementById(`cat-del-${type}-${idx}`);
+                    const inp = document.getElementById(`cat-input-${type}-${idx}`), del = document.getElementById(`cat-del-${type}-${idx}`);
                     if(inp) inp.onchange = (e) => { if (e.target.value.trim()) appState.categories[type][idx] = e.target.value.trim(); saveToStorage(); };
                     if(del) del.onclick = () => { if (appState.categories[type].length > 1) { appState.categories[type].splice(idx, 1); saveToStorage(); renderCategoryManagement(); } };
                 });
@@ -632,63 +628,59 @@
         }
 
         // ==========================================
-        // 5. EVENT BINDING & INIT
+        // 4. EVENT BINDING & INITIALIZATION
         // ==========================================
         function init() {
             loadFromStorage();
-            
             const setClick = (id, fn) => { const el = document.getElementById(id); if(el) el.onclick = fn; };
 
             setClick('tabItemMain', () => switchTab('main'));
             setClick('tabItemPlan', () => switchTab('plan'));
-
-            // ヘッダーの期間表示をタップして履歴選択へ
             setClick('main-cycle-trigger', () => navigateTo('view-history-select'));
-
             setClick('main-trigger-variable', () => { summaryContext = { type: 'variable', date: new Date() }; navigateTo('view-summary'); });
             setClick('main-trigger-savings', () => { summaryContext = { type: 'savings', date: new Date() }; navigateTo('view-summary'); });
+            setClick('summaryTabVar', () => { summaryContext.type = 'variable'; renderSummary(); });
+            setClick('summaryTabSav', () => { summaryContext.type = 'savings'; renderSummary(); });
+            
             setClick('settingsBtn', () => { 
-                const budgetInput = document.getElementById('monthlyBudgetInput');
-                const startDayInput = document.getElementById('startDayInput');
+                const budgetInput = document.getElementById('monthlyBudgetInput'), startInput = document.getElementById('startDayInput');
                 if(budgetInput) budgetInput.value = appState.monthlyBudget; 
-                if(startDayInput) startDayInput.value = appState.startDay; 
-                renderCategoryManagement(); 
-                const modal = document.getElementById('settingsModal');
-                if(modal) modal.classList.remove('hidden'); 
+                if(startInput) startInput.value = appState.startDay; 
+                renderCategoryManagement(); const modal = document.getElementById('settingsModal'); if(modal) modal.classList.remove('hidden'); 
             });
             
-            setClick('addBtn', openAddModal);
-            setClick('closeModal', () => { const m = document.getElementById('entryModal'); if(m) m.classList.add('hidden'); });
-            setClick('tabVar', () => switchType('variable'));
-            setClick('tabSav', () => switchType('savings'));
-            setClick('saveBtn', () => {
-                const amtEl = document.getElementById('amountInput');
-                const dateEl = document.getElementById('dateInput');
-                const memoEl = document.getElementById('memoInput');
-                const amt = parseInt(amtEl.value); if (!amt || isNaN(amt)) return;
-                const entry = { id: editingId || Date.now(), amount: amt, memo: memoEl.value, type: currentType, category: selectedCategory, timestamp: new Date(dateEl.value).getTime() };
-                if (editingId) { const idx = appState.transactions.findIndex(x => x.id === editingId); appState.transactions[idx] = entry; } else appState.transactions.push(entry);
-                saveToStorage(); updateUI(); const m = document.getElementById('entryModal'); if(m) m.classList.add('hidden');
-            });
-
             setClick('saveSettings', () => { 
                 const budgetVal = parseInt(document.getElementById('monthlyBudgetInput').value);
                 const startVal = parseInt(document.getElementById('startDayInput').value);
                 appState.monthlyBudget = budgetVal || 0; 
                 appState.startDay = startVal || 1; 
-                saveToStorage(); updateUI(); 
-                const m = document.getElementById('settingsModal'); if(m) m.classList.add('hidden'); 
+                const currentCycle = getCycleInfo();
+                appState.historicalBudgets[currentCycle.start.getTime()] = appState.monthlyBudget;
+                saveToStorage(); updateUI(); const m = document.getElementById('settingsModal'); if(m) m.classList.add('hidden'); 
             });
+            
             setClick('closeSettings', () => { const m = document.getElementById('settingsModal'); if(m) m.classList.add('hidden'); });
-            setClick('clearBtn', () => { if (confirm("全データを消去しますか？")) { localStorage.clear(); location.reload(); } });
+            setClick('addBtn', openAddModal);
+            setClick('closeModal', () => { const m = document.getElementById('entryModal'); if(m) m.classList.add('hidden'); });
+            setClick('tabVar', () => switchType('variable'));
+            setClick('tabSav', () => switchType('savings'));
+            
+            setClick('saveBtn', () => {
+                const amtVal = document.getElementById('amountInput').value, dateVal = document.getElementById('dateInput').value, memoVal = document.getElementById('memoInput').value;
+                const amt = parseInt(amtVal); if (!amt || isNaN(amt)) return;
+                const entry = { id: editingId || Date.now(), amount: amt, memo: memoVal, type: currentType, category: selectedCategory, timestamp: new Date(dateVal).getTime() };
+                if (editingId) { const idx = appState.transactions.findIndex(x => x.id === editingId); appState.transactions[idx] = entry; } else appState.transactions.push(entry);
+                saveToStorage(); updateUI(); const m = document.getElementById('entryModal'); if(m) m.classList.add('hidden');
+            });
 
+            setClick('backBtnHistorySelect', navigateBack);
             setClick('backBtnSummary', navigateBack);
             setClick('backBtnDetail', navigateBack);
             setClick('prevMonthBtn', () => { summaryContext.date.setMonth(summaryContext.date.getMonth() - 1); updateUI(); });
             setClick('nextMonthBtn', () => { summaryContext.date.setMonth(summaryContext.date.getMonth() + 1); updateUI(); });
-
             setClick('addPlanBtn', openAddPlan);
             setClick('closePlanModal', () => { const m = document.getElementById('planModal'); if(m) m.classList.add('hidden'); });
+            
             setClick('confirmAddPlan', () => {
                 const n = document.getElementById('planNameInput').value, t = parseInt(document.getElementById('planTargetInput').value), c = parseInt(document.getElementById('planCurrentInput').value) || 0, d = document.getElementById('planDateInput').value;
                 if(!n || !t || !d) return;
@@ -696,34 +688,27 @@
                 if(editingPlanId !== null) appState.plans[editingPlanId] = p; else appState.plans.push(p);
                 saveToStorage(); updateUI(); const m = document.getElementById('planModal'); if(m) m.classList.add('hidden');
             });
-            setClick('deletePlanBtn', () => { if(editingPlanId !== null) { appState.plans.splice(editingPlanId, 1); saveToStorage(); updateUI(); const m = document.getElementById('planModal'); if(m) m.classList.add('hidden'); } });
 
             setClick('exportBtn', () => {
                 const allData = localStorage.getItem(STORAGE_KEY);
-                if (allData) {
-                    const el = document.createElement('textarea'); el.value = allData; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); showToast("全データをコピーしました！");
-                } else { showToast("保存されたデータがありません"); }
+                if (allData) { const el = document.createElement('textarea'); el.value = allData; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); showToast("全データをコピーしました！"); } else showToast("保存されたデータがありません");
             });
             setClick('importBtn', () => { document.getElementById('importArea').value = ''; const m = document.getElementById('importModal'); if(m) m.classList.remove('hidden'); });
             setClick('closeImportModal', () => { const m = document.getElementById('importModal'); if(m) m.classList.add('hidden'); });
             setClick('confirmImport', () => {
-                try {
-                    const raw = document.getElementById('importArea').value.trim(); if (!raw) return;
-                    const parsed = JSON.parse(raw); if (typeof parsed !== 'object') throw new Error();
-                    localStorage.setItem(STORAGE_KEY, raw); showToast("復元に成功しました！"); setTimeout(() => location.reload(), 1000);
-                } catch (e) { showToast("エラー: 正しい形式ではありません"); }
+                try { const raw = document.getElementById('importArea').value.trim(); if (!raw) return; const parsed = JSON.parse(raw); if (typeof parsed !== 'object') throw new Error(); localStorage.setItem(STORAGE_KEY, raw); showToast("復元に成功しました！"); setTimeout(() => location.reload(), 1000); } catch (e) { showToast("エラー: 正しい形式ではありません"); }
             });
 
             setClick('deleteEntryBtn', () => { const m = document.getElementById('deleteConfirmModal'); if(m) m.classList.remove('hidden'); });
             setClick('cancelDeleteAction', () => { const m = document.getElementById('deleteConfirmModal'); if(m) m.classList.add('hidden'); });
-            setClick('confirmDeleteAction', () => { if (editingId) { appState.transactions = appState.transactions.filter(t => t.id !== editingId); saveToStorage(); updateUI(); const delM = document.getElementById('deleteConfirmModal'); const entryM = document.getElementById('entryModal'); if(delM) delM.classList.add('hidden'); if(entryM) entryM.classList.add('hidden'); } });
+            setClick('confirmDeleteAction', () => { if (editingId) { appState.transactions = appState.transactions.filter(t => t.id !== editingId); saveToStorage(); updateUI(); const delM = document.getElementById('deleteConfirmModal'), entryM = document.getElementById('entryModal'); if(delM) delM.classList.add('hidden'); if(entryM) entryM.classList.add('hidden'); } });
             setClick('closeCatInputModal', () => { const m = document.getElementById('catInputModal'); if(m) m.classList.add('hidden'); });
             setClick('confirmAddCat', () => { const val = document.getElementById('newCatNameInput').value.trim(); if (val) { appState.categories[targetCatAddType].push(val); saveToStorage(); renderCategoryManagement(); const m = document.getElementById('catInputModal'); if(m) m.classList.add('hidden'); } });
-
+            
             updateUI();
         }
 
-        function switchType(type) { currentType = type; const tabV = document.getElementById('tabVar'); const tabS = document.getElementById('tabSav'); if(tabV) tabV.className = `type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${type === 'variable' ? 'bg-slate-800 text-blue-400 shadow-xl' : 'text-gray-700'}`; if(tabS) tabS.className = `type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${type === 'savings' ? 'bg-slate-800 text-amber-400 shadow-xl' : 'text-gray-700'}`; selectedCategory = appState.categories[type][0]; renderCategoryGrid(); }
+        function switchType(type) { currentType = type; const tabV = document.getElementById('tabVar'), tabS = document.getElementById('tabSav'); if(tabV) tabV.className = `type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${type === 'variable' ? 'bg-slate-800 text-blue-400 shadow-xl' : 'text-gray-700'}`; if(tabS) tabS.className = `type-tab-btn flex-1 py-3 rounded-xl font-black text-[10px] transition-all ${type === 'savings' ? 'bg-slate-800 text-amber-400 shadow-xl' : 'text-gray-700'}`; selectedCategory = appState.categories[type][0]; renderCategoryGrid(); }
         function renderCategoryGrid() { const grid = document.getElementById('categoryGrid'); if(!grid) return; grid.innerHTML = ''; appState.categories[currentType].forEach(cat => { const btn = document.createElement('button'); btn.className = `category-chip px-5 py-3 rounded-2xl text-[10px] font-black transition-all ${selectedCategory === cat ? 'active' : 'bg-black text-gray-600'}`; btn.innerText = cat; btn.onclick = () => { selectedCategory = cat; renderCategoryGrid(); }; grid.appendChild(btn); }); }
         function openAddModal() { editingId = null; document.getElementById('modalTitle').innerText = "支出を入力"; document.getElementById('amountInput').value = ''; document.getElementById('memoInput').value = ''; document.getElementById('dateInput').value = formatDateForInput(new Date()); const delBtn = document.getElementById('deleteEntryBtn'); if(delBtn) delBtn.classList.add('view-hidden'); const m = document.getElementById('entryModal'); if(m) m.classList.remove('hidden'); switchType('variable'); }
         function openEditModal(t) { editingId = t.id; document.getElementById('modalTitle').innerText = "記録を編集"; document.getElementById('amountInput').value = t.amount; document.getElementById('memoInput').value = t.memo; document.getElementById('dateInput').value = formatDateForInput(new Date(t.timestamp)); const delBtn = document.getElementById('deleteEntryBtn'); if(delBtn) delBtn.classList.remove('view-hidden'); const m = document.getElementById('entryModal'); if(m) m.classList.remove('hidden'); switchType(t.type); selectedCategory = t.category; renderCategoryGrid(); }
