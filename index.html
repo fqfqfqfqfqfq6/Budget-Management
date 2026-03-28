@@ -130,7 +130,6 @@
         </header>
 
         <main class="max-w-md mx-auto px-4 mt-6 space-y-8">
-            <!-- 予算カード -->
             <section>
                 <div class="glass-card p-7 rounded-[2.5rem] shadow-2xl relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 border border-white/10">
                     <div class="relative z-10 space-y-6">
@@ -165,7 +164,6 @@
                     </div>
                 </div>
             </section>
-            <!-- カテゴリー合計ボタン -->
             <section class="grid grid-cols-2 gap-4">
                 <div id="main-trigger-variable" class="bg-slate-900/60 p-6 rounded-[2.2rem] border border-white/5 shadow-inner active-scale cursor-pointer hover:bg-slate-800 transition-colors relative">
                     <p class="text-[10px] uppercase tracking-widest text-gray-500 font-black mb-1">変動費合計 ↗</p>
@@ -176,7 +174,6 @@
                     <p class="text-xl font-black text-amber-500" id="main-total-savings">¥0</p>
                 </div>
             </section>
-            <!-- 履歴 -->
             <section class="space-y-4">
                 <div class="flex items-center justify-between px-2">
                     <h2 class="text-[11px] font-black text-gray-500 uppercase tracking-[0.2em]">Recently Records</h2>
@@ -187,7 +184,7 @@
         </main>
     </div>
 
-    <!-- VIEW 2: 未来計画 (PLAN) -->
+    <!-- VIEW 2: 未来計画 -->
     <div id="view-plan" class="view-hidden animate-fade-in min-h-screen pb-40">
         <header class="bg-black/60 border-b border-white/5 sticky top-0 z-30 backdrop-blur-xl safe-pt px-6 pb-4 text-center">
             <h1 class="text-lg font-black tracking-widest text-white uppercase">Future Planning</h1>
@@ -235,7 +232,6 @@
         </header>
 
         <main class="max-w-md mx-auto px-4 mt-6 space-y-6">
-            <!-- サイクル切り替え -->
             <div class="glass-card rounded-[2rem] p-5 flex items-center justify-between shadow-lg">
                 <button id="prevMonthBtn" class="p-3 text-gray-500 active-scale hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M15 19l-7-7 7-7"/></svg></button>
                 <div class="text-center">
@@ -245,7 +241,6 @@
                 <button id="nextMonthBtn" class="p-3 text-gray-500 active-scale hover:text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M9 5l7 7-7 7"/></svg></button>
             </div>
 
-            <!-- 月単位実績ダッシュボード -->
             <section id="summary-stats-overview" class="space-y-4">
                 <div class="glass-card p-6 rounded-[2.2rem] bg-slate-900/40 border border-white/5 relative overflow-hidden">
                     <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Cycle Overview</p>
@@ -282,10 +277,9 @@
                 <button id="summaryTabSav" class="flex-1 py-2 rounded-xl font-black text-[10px] transition-all">💰 貯蓄から</button>
             </div>
 
-            <!-- カテゴリー別合計リスト -->
-            <div class="space-y-4">
-                <h3 id="breakdown-list-title" class="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Variable Breakdown</h3>
-                <div id="summary-category-list" class="space-y-3 pb-20"></div>
+            <div class="space-y-4 pb-20">
+                <h3 id="breakdown-list-title" class="text-[10px] font-black text-gray-500 uppercase tracking-widest px-2">Category Breakdown</h3>
+                <div id="summary-category-list" class="space-y-3"></div>
             </div>
         </main>
     </div>
@@ -301,7 +295,7 @@
         <main class="max-w-md mx-auto px-4 mt-6"><div id="detail-transaction-list" class="space-y-3"></div></main>
     </div>
 
-    <!-- 共通ナビゲーション -->
+    <!-- ナビゲーション -->
     <nav id="bottom-tabs" class="fixed bottom-0 left-0 right-0 z-40 tab-bar safe-pb">
         <div class="max-w-md mx-auto flex justify-around items-center h-16">
             <button id="tabItemMain" class="tab-item flex flex-col items-center gap-1 active">
@@ -323,7 +317,7 @@
     <!-- モーダル: 支出入力 -->
     <div id="entryModal" class="fixed inset-0 bg-black/90 z-50 flex items-end justify-center hidden backdrop-blur-md">
         <div class="bg-slate-950 w-full max-w-md rounded-t-[3rem] p-8 pb-12 space-y-8 border-t border-white/10 safe-pb shadow-2xl overflow-y-auto max-h-[96vh]">
-            <div class="flex justify-between items-center"><h3 id="modalTitle" class="text-xl font-black text-white">支出を入力</h3><button id="closeModal" class="text-gray-600 bg-white/5 p-2 rounded-full">&times;</button></div>
+            <div class="flex justify-between items-center"><h3 id="modalTitle" class="text-xl font-black text-white">支出を入力</h3><button id="closeModal" class="text-gray-600 bg-white/5 p-2 rounded-full active-scale">&times;</button></div>
             <input type="hidden" id="editId">
             <div class="space-y-8">
                 <div class="text-center"><label class="block text-[10px] text-gray-500 uppercase font-black tracking-widest">Amount</label><div class="flex items-center justify-center gap-2"><span class="text-3xl font-bold text-blue-500">¥</span><input type="number" id="amountInput" inputmode="numeric" placeholder="0" class="text-6xl font-black text-white bg-transparent border-none focus:ring-0 outline-none w-64 text-center"></div></div>
@@ -379,10 +373,6 @@
         </div>
     </div>
 
-    <!-- 各種確認・追加 -->
-    <div id="deleteConfirmModal" class="fixed inset-0 bg-black/95 z-[110] flex items-center justify-center hidden p-6 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-10 space-y-8 border border-rose-500/20 text-center shadow-2xl"><div class="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">!</div><h3 class="text-lg font-bold text-white">削除しますか？</h3><div class="space-y-3"><button id="confirmDeleteAction" class="w-full bg-rose-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">削除する</button><button id="cancelDeleteAction" class="w-full bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">キャンセル</button></div></div></div>
-    <div id="catInputModal" class="fixed inset-0 bg-black/95 z-[100] flex items-center justify-center hidden p-4 backdrop-blur-xl"><div class="bg-slate-900 w-full max-w-xs rounded-[2.5rem] p-8 space-y-6 border border-white/10 shadow-2xl"><h3 class="text-lg font-bold text-center text-white">カテゴリー追加</h3><input type="text" id="newCatNameInput" placeholder="名称" class="w-full bg-white/5 rounded-2xl px-6 py-4 outline-none text-white text-lg border border-white/5 focus:border-blue-500"><div class="flex gap-3"><button id="closeCatInputModal" class="flex-1 bg-white/5 text-gray-400 py-4 rounded-2xl font-bold active-scale">中止</button><button id="confirmAddCat" class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg active-scale">決定</button></div></div></div>
-
     <script>
         // ==========================================
         // 1. STATE & STORAGE
@@ -393,9 +383,9 @@
             categories: { variable: ["仕事食費", "食費", "日用品", "交通費", "趣味"], savings: ["貯金", "旅費交通費", "病院", "自己投資"] },
             transactions: [], 
             plans: [],
-            historicalBudgets: {} // サイクルごとの予算記録
+            historicalBudgets: {} // { cycleStartTime: budgetValue }
         };
-        const STORAGE_KEY = 'budget_pro_v5_all_data'; 
+        const STORAGE_KEY = 'budget_pro_v6_final'; 
         let viewHistory = ['view-main'], currentType = 'variable', selectedCategory = '', editingId = null, editingPlanId = null;
         let summaryContext = { type: 'variable', date: new Date() }, detailContext = { category: '', type: 'variable' }, targetCatAddType = 'variable';
 
@@ -418,8 +408,9 @@
         // 2. CORE LOGIC
         // ==========================================
         function getCycleInfo(specificDate = new Date()) {
-            let year = specificDate.getFullYear(), month = specificDate.getMonth();
-            if (specificDate.getDate() < appState.startDay) month--;
+            let d = new Date(specificDate);
+            let year = d.getFullYear(), month = d.getMonth();
+            if (d.getDate() < appState.startDay) month--;
             let start = new Date(year, month, appState.startDay);
             if (start.getMonth() !== (month + 12) % 12) start = new Date(year, month + 1, 0);
             start.setHours(0,0,0,0);
@@ -432,18 +423,30 @@
             return { start, end, daysLeft, totalDays, rangeText: `${start.getMonth()+1}/${start.getDate()} ~ ${end.getMonth()+1}/${end.getDate()}` };
         }
 
+        /**
+         * 指定されたサイクルの時点での貯金インパクトを計算
+         */
         function getMonthlyPlanRequirement(specificDate = new Date()) {
-            let totalMonthImpact = 0; const today = new Date(); today.setHours(0,0,0,0);
-            const currentCycle = getCycleInfo(specificDate);
+            let totalMonthImpact = 0; 
+            const cycle = getCycleInfo(specificDate);
+            // 過去ログ計算用に、計算基準日をサイクルの最終日に合わせる（過去実績を安定させるため）
+            const refDate = (specificDate.getTime() > Date.now()) ? new Date() : cycle.end;
+            refDate.setHours(0,0,0,0);
+
             appState.plans.forEach(p => {
                 const targetDate = new Date(p.deadline); targetDate.setHours(23,59,59,999);
                 const remainingAmount = Math.max(0, p.target - p.current);
                 if (remainingAmount <= 0) return;
-                const diffTime = targetDate.getTime() - today.getTime();
+
+                const diffTime = targetDate.getTime() - refDate.getTime();
                 const daysUntilDeadline = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
                 const dailyRate = remainingAmount / daysUntilDeadline;
-                if (targetDate <= currentCycle.end) { totalMonthImpact += remainingAmount; } 
-                else { totalMonthImpact += Math.min(remainingAmount, Math.floor(dailyRate * 30)); }
+
+                if (targetDate <= cycle.end) {
+                    totalMonthImpact += remainingAmount;
+                } else {
+                    totalMonthImpact += Math.min(remainingAmount, Math.floor(dailyRate * 30));
+                }
             });
             return totalMonthImpact;
         }
@@ -488,6 +491,10 @@
         // ==========================================
         function renderMain() {
             const cycle = getCycleInfo(), planTotal = getMonthlyPlanRequirement(), todayStr = formatDateForInput(new Date());
+            
+            // 現在の予算を履歴にも確実に保存
+            appState.historicalBudgets[cycle.start.getTime()] = appState.monthlyBudget;
+
             let varTotal = 0, savTotal = 0, spentToday = 0;
             appState.transactions.forEach(t => {
                 if (t.timestamp >= cycle.start.getTime() && t.timestamp <= cycle.end.getTime()) {
@@ -546,18 +553,18 @@
                 });
                 const div = document.createElement('div'); div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between border border-white/5 active-scale cursor-pointer shadow-md";
                 div.onclick = () => { summaryContext.date = checkDate; summaryContext.type = 'variable'; navigateTo('view-summary'); };
-                div.innerHTML = `<div><p class="text-sm font-black text-white">${cycle.start.getFullYear()}年 ${cycle.start.getMonth() + 1}月</p><p class="text-[9px] text-gray-600 font-bold mt-1 tracking-widest">${cycle.rangeText}</p></div><div class="text-right"><p class="text-[9px] font-bold text-rose-400">🛒 ¥${vTotal.toLocaleString()}</p><p class="text-[9px] font-bold text-amber-500">💰 ¥${sTotal.toLocaleString()}</p></div>`;
+                div.innerHTML = `<div><p class="text-sm font-black text-white">${cycle.start.getFullYear()}年 ${cycle.start.getMonth() + 1}月</p><p class="text-[9px] text-gray-600 font-bold mt-1 tracking-widest">${cycle.rangeText}</p></div><div class="text-right"><p class="text-[9px] font-bold text-rose-400 tracking-tight">🛒 ¥${vTotal.toLocaleString()}</p><p class="text-[9px] font-bold text-amber-500 tracking-tight">💰 ¥${sTotal.toLocaleString()}</p></div>`;
                 list.appendChild(div);
             }
         }
 
-        // 集計画面 (修正版: 過去予算 & 変動費/貯蓄切り替え)
+        // 集計画面 (修正版: 過去予算 & 貯蓄支出も反映)
         function renderSummary() {
             const cycle = getCycleInfo(summaryContext.date), cycleKey = cycle.start.getTime(), isVar = summaryContext.type === 'variable';
             const planTotal = getMonthlyPlanRequirement(summaryContext.date);
             safeUpdate('summary-cycle-range', cycle.rangeText); safeUpdate('summary-month-label', `${cycle.start.getFullYear()}年 ${cycle.start.getMonth()+1}月分`);
 
-            // 正確な過去予算の取得 (なければ現在予算)
+            // 過去の月間予算を取得 (なければデフォルト予算)
             const historicalBudget = appState.historicalBudgets[cycleKey] || appState.monthlyBudget;
 
             let cycleVarTotal = 0, cycleSavTotal = 0;
@@ -570,14 +577,19 @@
                 }
             });
 
-            const effectiveBudget = historicalBudget - planTotal, surplus = effectiveBudget - cycleVarTotal;
-            safeUpdate('cycle-stat-budget', `¥${effectiveBudget.toLocaleString()}`); safeUpdate('cycle-stat-spent', `¥${(cycleVarTotal + cycleSavTotal).toLocaleString()}`);
-            safeUpdate('cycle-stat-surplus', `¥${surplus.toLocaleString()}`); safeUpdate('cycle-stat-var', `¥${cycleVarTotal.toLocaleString()}`); safeUpdate('cycle-stat-sav', `¥${cycleSavTotal.toLocaleString()}`);
+            // 実績の計算
+            const surplus = historicalBudget - planTotal - cycleVarTotal; // 余剰資金 = 予算 - 貯金目標 - 変動費支出
+
+            safeUpdate('cycle-stat-budget', `¥${historicalBudget.toLocaleString()}`); 
+            safeUpdate('cycle-stat-spent', `¥${(cycleVarTotal + cycleSavTotal).toLocaleString()}`);
+            safeUpdate('cycle-stat-surplus', `¥${surplus.toLocaleString()}`);
+            safeUpdate('cycle-stat-var', `¥${cycleVarTotal.toLocaleString()}`);
+            safeUpdate('cycle-stat-sav', `¥${cycleSavTotal.toLocaleString()}`);
 
             const surplusEl = document.getElementById('cycle-stat-surplus');
             if (surplusEl) surplusEl.className = `text-sm font-black ${surplus < 0 ? 'text-rose-500' : 'text-emerald-400'}`;
 
-            // タブの強調
+            // タブ表示更新
             const tabV = document.getElementById('summaryTabVar'), tabS = document.getElementById('summaryTabSav');
             if(tabV) tabV.className = `flex-1 py-2 rounded-xl font-black text-[10px] transition-all ${isVar ? 'bg-slate-800 text-blue-400 shadow-lg' : 'text-gray-600'}`;
             if(tabS) tabS.className = `flex-1 py-2 rounded-xl font-black text-[10px] transition-all ${!isVar ? 'bg-slate-800 text-amber-400 shadow-lg' : 'text-gray-600'}`;
@@ -587,9 +599,9 @@
             if (!list) return; list.innerHTML = '';
             const currentCategories = appState.categories[summaryContext.type];
             currentCategories.map(name => ({ name, total: categoryBreakdown[name] })).sort((a,b) => b.total - a.total).forEach(item => {
-                const div = document.createElement('div'); div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between active-scale cursor-pointer border border-white/5 shadow-md";
+                const div = document.createElement('div'); div.className = "glass-card p-5 rounded-[1.8rem] flex items-center justify-between active-scale cursor-pointer border border-white/5 shadow-md transition-all";
                 div.onclick = () => { detailContext = { category: item.name, type: summaryContext.type }; navigateTo('view-detail'); };
-                div.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl ${isVar ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center text-[10px] font-black border border-white/5">${item.name.substring(0,2)}</div><p class="font-bold text-gray-200 text-sm">${item.name}</p></div><p class="font-black text-white text-lg">¥${item.total.toLocaleString()}</p>`;
+                div.innerHTML = `<div class="flex items-center gap-4"><div class="w-10 h-10 rounded-xl ${isVar ? 'bg-rose-500/10 text-rose-500' : 'bg-amber-500/10 text-amber-500'} flex items-center justify-center text-[10px] font-black border border-white/5">${item.name.substring(0,2)}</div><p class="font-bold text-gray-200 text-sm tracking-tight">${item.name}</p></div><p class="font-black text-white text-lg">¥${item.total.toLocaleString()}</p>`;
                 list.appendChild(div);
             });
         }
@@ -666,9 +678,9 @@
             setClick('tabSav', () => switchType('savings'));
             
             setClick('saveBtn', () => {
-                const amtVal = document.getElementById('amountInput').value, dateVal = document.getElementById('dateInput').value, memoVal = document.getElementById('memoInput').value;
-                const amt = parseInt(amtVal); if (!amt || isNaN(amt)) return;
-                const entry = { id: editingId || Date.now(), amount: amt, memo: memoVal, type: currentType, category: selectedCategory, timestamp: new Date(dateVal).getTime() };
+                const amtEl = document.getElementById('amountInput'), dateEl = document.getElementById('dateInput'), memoEl = document.getElementById('memoInput');
+                const amt = parseInt(amtEl.value); if (!amt || isNaN(amt)) return;
+                const entry = { id: editingId || Date.now(), amount: amt, memo: memoEl.value, type: currentType, category: selectedCategory, timestamp: new Date(dateEl.value).getTime() };
                 if (editingId) { const idx = appState.transactions.findIndex(x => x.id === editingId); appState.transactions[idx] = entry; } else appState.transactions.push(entry);
                 saveToStorage(); updateUI(); const m = document.getElementById('entryModal'); if(m) m.classList.add('hidden');
             });
